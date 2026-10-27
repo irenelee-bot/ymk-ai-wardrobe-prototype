@@ -34,6 +34,8 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 .photo.busy .dim{opacity:1;}
 .processing{position:absolute;left:10px;right:10px;top:58px;background:rgba(40,40,40,.92);color:#fff;border-radius:10px;padding:10px;text-align:center;font-size:12px;line-height:1.45;opacity:0;transform:translateY(6px);transition:all .25s;pointer-events:none;}
 .photo.busy .processing{opacity:1;transform:none;}
+.processing .spin{display:inline-block;width:13px;height:13px;margin-right:6px;vertical-align:-2px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
 .animate-btn{position:absolute;right:10px;bottom:20px;height:30px;padding:0 12px;border-radius:15px;background:#fff;color:var(--accent);font-size:12px;font-weight:600;display:none;}
 .photo.done .animate-btn{display:block;}
 .toast{position:absolute;left:50%;top:12px;transform:translate(-50%,-8px);background:rgba(20,20,20,.86);color:#fff;font-size:12px;padding:7px 12px;border-radius:16px;white-space:nowrap;opacity:0;transition:all .25s;pointer-events:none;z-index:5;}
@@ -99,7 +101,7 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 @keyframes sweep{to{left:120%;}}
 .edit-head{display:none;align-items:center;gap:10px;flex-shrink:0;}
 .edit-head .thumb{width:42px;height:48px;border-radius:8px;border:1px solid #E6E6E6;background:#F7F7F7;overflow:hidden;}
-.edit-head .thumb img{width:100%;height:100%;object-fit:contain;}
+.edit-head .thumb img{width:100%;height:100%;object-fit:contain;transition:opacity .2s;}
 .edit-head .t1{font-size:13px;font-weight:600;}
 .edit-head .t2{font-size:11px;color:var(--muted);}
 .edit-head .done-btn{margin-left:auto;color:var(--accent-dark);font-weight:600;font-size:13px;height:44px;padding:0 4px;}
@@ -142,7 +144,7 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
   <div class="photo" id="photo">
     <img src="assets/images/img-photo-model-01.jpg" alt="Your photo" loading="lazy" id="photoImg" onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-photo-model-01/240/300'">
     <div class="dim"></div>
-    <div class="processing">Processing…<br>You can view the results later in History page.</div>
+    <div class="processing"><span class="spin" aria-hidden="true"></span>Processing…<br>You can view the results later in History page.</div>
     <button class="animate-btn">Animate Photo</button>
     <div class="toast" id="toast"></div>
   </div>
@@ -206,6 +208,22 @@ measureLayout();
 })();
 var $=function(id){return document.getElementById(id);};
 var IS_DESKTOP=function(){return window.innerWidth>480;};
+function frameScale(){var frame=document.querySelector('.phone-frame'),m=getComputedStyle(frame).transform;
+  if(!m||m==='none')return 1;var v=m.match(/matrix\(([^)]+)\)/);return v?parseFloat(v[1].split(',')[0])||1:1;}
+function relRect(el){var frame=document.querySelector('.phone-frame'),r=el.getBoundingClientRect(),fr=frame.getBoundingClientRect(),s=frameScale();
+  return {left:(r.left-fr.left)/s,top:(r.top-fr.top)/s,width:r.width/s,height:r.height/s};}
+function flyGhost(snap,destEl,ms,cb){var frame=document.querySelector('.phone-frame'),dst=relRect(destEl);
+  var ghost=document.createElement('img');ghost.src=snap.src;ghost.alt='';
+  ghost.style.cssText='position:absolute;z-index:40;pointer-events:none;object-fit:contain;'
+    +'left:'+snap.rect.left+'px;top:'+snap.rect.top+'px;width:'+snap.rect.width+'px;height:'+snap.rect.height+'px;'
+    +'filter:'+(snap.filter||'none')+';border-radius:'+(snap.radius||'0')+';'
+    +'transition:left '+ms+'ms cubic-bezier(.3,.6,.3,1),top '+ms+'ms cubic-bezier(.3,.6,.3,1),width '+ms+'ms cubic-bezier(.3,.6,.3,1),height '+ms+'ms cubic-bezier(.3,.6,.3,1),border-radius '+ms+'ms;';
+  frame.appendChild(ghost);
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    ghost.style.left=dst.left+'px';ghost.style.top=dst.top+'px';ghost.style.width=dst.width+'px';ghost.style.height=dst.height+'px';
+    if(snap.destRadius!=null)ghost.style.borderRadius=snap.destRadius;
+  });});
+  setTimeout(function(){ghost.remove();if(cb)cb();},ms+20);}
 var toastT;
 function toast(msg,ms){var t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},ms||2200);}
 function tip(msg,anchor,ms){var t=$('tip'),g=$('grid');t.textContent=msg;t.style.left=(anchor.offsetLeft+anchor.offsetWidth/2-10)+'px';t.style.top=(anchor.offsetTop+anchor.offsetHeight+6)+'px';t.classList.add('show');setTimeout(function(){t.classList.remove('show');},ms||2600);}
@@ -234,16 +252,38 @@ function generate(){var v=$('prompt').value.trim();if(!v){toast('Describe an ite
   setTimeout(function(){var im=$('itemImg');im.style.filter=FILTERS[variant%FILTERS.length];variant++;im.style.transform='scale(.96)';go('result');requestAnimationFrame(function(){im.style.transform='scale(1)';});
     document.querySelectorAll('.edit-head .thumb img').forEach(function(t){t.style.filter=im.style.filter;});},2400);}
 $('sendBtn').addEventListener('click',generate);
-$('prompt').addEventListener('focus',function(){window.scrollTo(0,0);document.body.scrollTop=0;if(state==='result')go('editing');});
-$('doneBtn').addEventListener('click',function(){$('prompt').blur();go('result');});
+$('prompt').addEventListener('focus',function(){window.scrollTo(0,0);document.body.scrollTop=0;
+  if(state==='result'){
+    var im=$('itemImg');
+    var snap={rect:relRect(im),src:im.getAttribute('src'),filter:im.style.filter};
+    go('editing');
+    var thumb=document.querySelector('.edit-head .thumb img');
+    thumb.style.opacity=0;
+    flyGhost(snap,thumb,260,function(){thumb.style.opacity=1;});
+  }
+});
+$('doneBtn').addEventListener('click',function(){$('prompt').blur();
+  var thumb=document.querySelector('.edit-head .thumb img');
+  var snap={rect:relRect(thumb),src:thumb.getAttribute('src'),filter:thumb.style.filter};
+  go('result');
+  var im=$('itemImg');
+  im.style.opacity=0;
+  flyGhost(snap,im,260,function(){im.style.opacity=1;});
+});
 $('prompt').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();generate();}});
-var added=false;
-$('addBtn').addEventListener('click',function(){closePanel();state='closed';
-  var b=document.createElement('button');b.className='tile item pop';b.setAttribute('aria-label','AI satin camisole');
-  b.innerHTML='<img src="assets/images/img-ai-item-01.jpg" alt="AI satin camisole" onerror="this.onerror=null;this.src=\'https://picsum.photos/seed/img-ai-item-01/240/300\'"><span class="badge-ai">AI</span>';
-  b.querySelector('img').style.filter=$('itemImg').style.filter;
+$('addBtn').addEventListener('click',function(){
+  var im=$('itemImg');
+  var snap={rect:relRect(im),src:im.getAttribute('src'),filter:im.style.filter};
+  closePanel();state='closed';
+  var b=document.createElement('button');b.className='tile item';b.setAttribute('aria-label','AI satin camisole');
+  b.innerHTML='<img src="'+snap.src+'" alt="AI satin camisole" onerror="this.onerror=null;this.src=\'https://picsum.photos/seed/img-ai-item-01/240/300\'"><span class="badge-ai">AI</span>';
+  b.querySelector('img').style.filter=snap.filter;
+  b.style.visibility='hidden';
   var g=$('grid');g.insertBefore(b,g.children[2]);
-  setTimeout(function(){toast('Added to My Wardrobe · tap to try on',2600);tip('Tap to try on',b,2600);},350);
+  flyGhost(snap,b,350,function(){
+    b.style.visibility='';b.classList.add('pop');
+    toast('Added to My Wardrobe · tap to try on',2600);tip('Tap to try on',b,2600);
+  });
   b.addEventListener('click',function(){document.querySelectorAll('.tile.sel').forEach(function(x){x.classList.remove('sel');});b.classList.add('sel');tryOn();});
 });
 
