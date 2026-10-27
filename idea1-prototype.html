@@ -26,7 +26,11 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 .app-nav{flex-shrink:0;padding-top:var(--safe-top);height:calc(var(--safe-top) + 44px);display:flex;align-items:center;gap:8px;padding-left:8px;padding-right:8px;}
 .icon-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:22px;}
 .history{height:28px;padding:0 12px;border-radius:14px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;}
-.nav-title{flex:1;text-align:center;font-size:17px;margin-right:84px;}
+.nav-title{flex:1;text-align:center;font-size:17px;}
+.credits{display:flex;align-items:center;gap:4px;height:26px;padding:0 9px;border-radius:13px;background:#F6F6F6;border:1px solid var(--border);font-size:13px;font-weight:700;color:#333;flex-shrink:0;}
+.credits svg{color:var(--accent);flex-shrink:0;}
+.credits.pulse{animation:creditPulse .4s ease-out;}
+@keyframes creditPulse{0%{transform:scale(1);}35%{transform:scale(1.18);color:var(--accent-dark);}100%{transform:scale(1);}}
 .photo{flex-shrink:0;position:relative;height:200px;background:var(--photo-bg);display:flex;justify-content:center;overflow:hidden;}
 .photo img{height:100%;width:156px;object-fit:cover;object-position:top;transition:opacity .35s;}
 .dim{position:absolute;inset:0;background:rgba(0,0,0,.35);opacity:0;transition:opacity .25s;pointer-events:none;}
@@ -62,7 +66,6 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 .ai-tile.loading .bar{display:block;}
 .ai-tile.loading .bar i{animation:fill 3s linear forwards;}
 .ai-tile.done{border:2px solid var(--accent);background:var(--tint);color:var(--accent-dark);}
-.tile.ai-added{border:2px solid var(--accent);}
 .ai-tile .ok{display:none;position:absolute;right:0;bottom:0;width:20px;height:20px;border-radius:7px 0 7px 0;background:#2DB84B;color:#fff;align-items:center;justify-content:center;}
 .ai-tile.done .ok{display:flex;}
 .ai-tile.done .new{display:none;}
@@ -111,8 +114,9 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 .send{width:44px;height:44px;flex-shrink:0;border-radius:22px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;transition:background .2s;}
 .send.dark{background:#222;}
 .send:disabled{background:#E6E6E6;color:#A0A0A0;}
-.cta{height:44px;flex-shrink:0;border-radius:22px;background:var(--accent);color:#fff;font-size:15px;font-weight:600;}
+.cta{height:44px;flex-shrink:0;border-radius:22px;background:var(--accent);color:#fff;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:4px;}
 .cta:disabled{background:#F4C2D3;}
+.cta .cost{display:inline-flex;align-items:center;gap:2px;font-size:13px;font-weight:700;opacity:.9;}
 .kb{flex-shrink:0;height:0;overflow:hidden;background:var(--kb);transition:height .25s cubic-bezier(.2,.8,.2,1);}
 .kb-in{height:100%;padding:0 14px 16px;display:flex;flex-direction:column;}
 .kb .sug{height:32px;display:flex;align-items:center;font-size:13px;color:#111;}
@@ -140,6 +144,7 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
     <button class="icon-btn" aria-label="Gallery"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M6 17l4-5 3 3 2-2 3 4"/><circle cx="15" cy="9" r="1.5"/></svg></button>
     <button class="history">History</button>
     <div class="nav-title">Wardrobe</div>
+    <div class="credits" id="credits" aria-label="Credits balance"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.5 5h5L17 12l3.5 5h-5L12 22l-3.5-5h-5L7 12 3.5 7h5z"/></svg><span id="creditsNum">100</span></div>
   </header>
   <div class="photo" id="photo">
     <img src="assets/images/img-photo-model-01.jpg" alt="Your photo" loading="lazy" id="photoImg" onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-photo-model-01/240/300'">
@@ -169,7 +174,7 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
       <div class="composer"><label for="prompt" style="position:absolute;left:-9999px">Describe an item</label>
         <textarea id="prompt" placeholder="Describe one item, e.g. black velvet blazer with gold buttons">Chocolate satin camisole with cream lace trim</textarea>
         <button class="send" id="sendBtn" aria-label="Generate item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div>
-      <button class="cta" id="addBtn">Add to My Wardrobe</button>
+      <button class="cta" id="addBtn">Add to My Wardrobe <span class="cost">· 20 <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.5 5h5L17 12l3.5 5h-5L12 22l-3.5-5h-5L7 12 3.5 7h5z"/></svg></span></button>
     </div><div class="kb" id="kb" aria-hidden="true"><div class="kb-in"><div class="sug"><div>trim</div><div>trims</div><div>trimmed</div></div><div class="rows"><div class="r"><div class="k">q</div><div class="k">w</div><div class="k">e</div><div class="k">r</div><div class="k">t</div><div class="k">y</div><div class="k">u</div><div class="k">i</div><div class="k">o</div><div class="k">p</div></div><div class="r" style="padding:0 15px"><div class="k">a</div><div class="k">s</div><div class="k">d</div><div class="k">f</div><div class="k">g</div><div class="k">h</div><div class="k">j</div><div class="k">k</div><div class="k">l</div></div><div class="r"><div class="k d"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l8 8h-4.5v7h-7v-7H4z"/></svg></div><div class="k">z</div><div class="k">x</div><div class="k">c</div><div class="k">v</div><div class="k">b</div><div class="k">n</div><div class="k">m</div><div class="k d"><svg width="20" height="16" viewBox="0 0 26 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M8 2h16v16H8l-6-8z"/><path d="M12 7l6 6M18 7l-6 6"/></svg></div></div><div class="r"><div class="k d w">123</div><div class="k" style="font-size:13px">space</div><div class="k d w">return</div></div></div></div></div></div>
 </div></div>
 <script>
@@ -232,6 +237,25 @@ function closePanel(){var p=$('panel');p.classList.remove('open');$('prompt').bl
 function tryOn(done){var ph=$('photo');ph.classList.remove('done');ph.classList.add('busy');
   setTimeout(function(){ph.classList.remove('busy');$('photoImg').style.opacity=0;
     setTimeout(function(){$('photoImg').src='assets/images/img-photo-result-01.jpg';$('photoImg').style.opacity=1;ph.classList.add('done');$('applyBtn').classList.add('on');if(done)done();},200);},2600);}
+var ADD_COST=20,credits=100;
+function renderCredits(){$('creditsNum').textContent=credits;}
+function spendCredits(n,anchorEl){
+  var frame=document.querySelector('.phone-frame'),chip=$('credits');
+  var r1=relRect(anchorEl),r2=relRect(chip);
+  var fly=document.createElement('div');fly.textContent='-'+n;
+  fly.style.cssText='position:absolute;z-index:50;font-size:13px;font-weight:700;color:var(--accent);pointer-events:none;'
+    +'left:'+(r1.left+r1.width/2-16)+'px;top:'+(r1.top-4)+'px;transition:left .5s ease-out,top .5s ease-out,opacity .5s ease-out;opacity:1;';
+  frame.appendChild(fly);
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    fly.style.left=(r2.left+r2.width/2-16)+'px';fly.style.top=(r2.top-18)+'px';fly.style.opacity='0';
+  });});
+  setTimeout(function(){
+    fly.remove();
+    credits=Math.max(0,credits-n);renderCredits();
+    chip.classList.remove('pulse');void chip.offsetWidth;chip.classList.add('pulse');
+  },480);
+}
+renderCredits();
 document.querySelectorAll('.tile.item[data-kind="plain"]').forEach(function(b){b.addEventListener('click',function(){toast('Prototype: try the Create with AI flow');});});
 document.querySelectorAll('.tpl').forEach(function(b){b.addEventListener('click',function(){toast('Prototype: templates are not wired');});});
 
@@ -274,9 +298,10 @@ $('prompt').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftK
 $('addBtn').addEventListener('click',function(){
   var im=$('itemImg');
   var snap={rect:relRect(im),src:im.getAttribute('src'),filter:im.style.filter};
+  spendCredits(ADD_COST,$('addBtn'));
   closePanel();state='closed';
   var newBadge=document.querySelector('#aiTile .new');if(newBadge)newBadge.style.display='none';
-  var b=document.createElement('button');b.className='tile item ai-added';b.setAttribute('aria-label','AI satin camisole');
+  var b=document.createElement('button');b.className='tile item';b.setAttribute('aria-label','AI satin camisole');
   b.innerHTML='<img src="'+snap.src+'" alt="AI satin camisole" onerror="this.onerror=null;this.src=\'https://picsum.photos/seed/img-ai-item-01/240/300\'"><span class="badge-ai">AI</span>';
   b.querySelector('img').style.filter=snap.filter;
   b.style.visibility='hidden';
