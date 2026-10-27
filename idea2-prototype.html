@@ -5,10 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>YMK AI Wardrobe — Idea #2 · Prompt → Generate on Photo</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{width:100%;height:100%;background:#111;overflow:hidden;position:fixed;top:0;left:0;font-family:'Inter',-apple-system,system-ui,sans-serif;color:#222;}
+html,body{width:100%;height:100%;background:#111;overflow:hidden;position:fixed;top:0;left:0;font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;color:#222;}
 :root{--safe-top:env(safe-area-inset-top,48px);--safe-bot:env(safe-area-inset-bottom,20px);
   --bg:#FFFFFF;--accent:#E8336D;--accent-dark:#B8204F;--tint:#FFF2F6;--text:#222222;--muted:#6B6B6B;--border:#DDDDDD;--photo-bg:#EBEBEB;--kb:#D1D4DA;--key-dark:#ABB0BA;}
 .device-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#111;}
@@ -42,7 +41,7 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 .toast.show{opacity:1;transform:translate(-50%,0);}
 .scroll-area{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-top:-12px;background:var(--bg);border-radius:16px 16px 0 0;position:relative;z-index:2;padding:0 10px 16px;}
 .scroll-area::-webkit-scrollbar{display:none;}
-.grabber{display:flex;justify-content:center;padding:8px 0 4px;color:#222;}
+.grabber{display:flex;justify-content:center;padding:3px 0 8px;color:#222;}
 .tabs{position:sticky;top:0;z-index:20;background:var(--bg);display:flex;gap:14px;align-items:center;font-size:13px;padding:6px 14px 10px 0;white-space:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .tabs::-webkit-scrollbar{display:none;}
 .tabs span{flex-shrink:0;}
@@ -52,8 +51,8 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 .tile img{width:100%;height:100%;object-fit:contain;}
 .tile.sel{border:2px solid var(--accent);}
 .upload .plus{width:22px;height:22px;border-radius:11px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;}
-.ai-tile{border:1.5px solid var(--accent);background:var(--tint);color:var(--accent-dark);font-weight:600;line-height:1.2;text-align:center;overflow:visible;}
-.ai-tile .new{position:absolute;top:-6px;right:-4px;background:var(--accent);color:#fff;font-size:8px;font-weight:700;padding:2px 4px;border-radius:7px;}
+.ai-tile{border:1px solid var(--border);background:#fff;color:#222;font-weight:600;line-height:1.2;text-align:center;overflow:hidden;}
+.ai-tile .new{position:absolute;top:4px;right:4px;background:var(--accent);color:#fff;font-size:8px;font-weight:700;padding:2px 4px;border-radius:7px;}
 .ai-tile svg{color:var(--accent);}
 .ai-tile .bar{display:none;width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.5);overflow:hidden;}
 .ai-tile .bar i{display:block;height:100%;width:0;background:var(--accent);}
@@ -62,7 +61,7 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 .ai-tile.loading .lbl{display:none;}
 .ai-tile.loading .bar{display:block;}
 .ai-tile.loading .bar i{animation:fill 3s linear forwards;}
-.ai-tile.done{border:2px solid var(--accent);}
+.ai-tile.done{border:2px solid var(--accent);background:var(--tint);color:var(--accent-dark);}
 .ai-tile .ok{display:none;position:absolute;right:0;bottom:0;width:20px;height:20px;border-radius:7px 0 7px 0;background:#2DB84B;color:#fff;align-items:center;justify-content:center;}
 .ai-tile.done .ok{display:flex;}
 .ai-tile.done .new{display:none;}
