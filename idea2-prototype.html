@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>YMK AI Wardrobe — Idea #2 · Prompt → Generate on Photo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;background:#111;overflow:hidden;font-family:'Inter',-apple-system,system-ui,sans-serif;color:#222;}
+:root{--safe-top:env(safe-area-inset-top,48px);--safe-bot:env(safe-area-inset-bottom,20px);
+  --bg:#FFFFFF;--accent:#E8336D;--accent-dark:#B8204F;--tint:#FFF2F6;--text:#222222;--muted:#6B6B6B;--border:#DDDDDD;--photo-bg:#EBEBEB;--kb:#D1D4DA;--key-dark:#ABB0BA;}
+.device-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#111;}
+.phone-frame{position:relative;width:320px;height:693px;background:var(--bg);border-radius:44px;overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 0 0 1px rgba(255,255,255,.13),0 0 0 8px #161616,0 0 0 9px rgba(255,255,255,.07),0 40px 80px rgba(0,0,0,.9);}
+@media (min-width:481px){:root{--safe-top:48px;}.status-bar{display:flex;}}
+@media (max-width:480px){
+  html,body{background:var(--bg);height:100lvh;}
+  .device-wrap{display:block;padding:0;background:var(--bg);overflow:hidden;height:100lvh;min-height:0;}
+  .phone-frame{width:320px!important;height:calc(100lvh / var(--mob-scale,1))!important;border-radius:0!important;box-shadow:none!important;transform-origin:top left;}
+  .kb{display:none!important;}
+}
+.status-bar{position:absolute;top:0;left:0;right:0;height:var(--safe-top);display:none;align-items:flex-end;justify-content:space-between;padding:0 24px 10px 30px;z-index:150;pointer-events:none;font-size:14px;font-weight:600;color:#000;}
+.sb-icons{display:flex;gap:5px;align-items:center;}
+button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer;}
+.app-nav{flex-shrink:0;padding-top:var(--safe-top);height:calc(var(--safe-top) + 44px);display:flex;align-items:center;gap:8px;padding-left:8px;padding-right:8px;}
+.icon-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:22px;}
+.history{height:28px;padding:0 12px;border-radius:14px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;}
+.nav-title{flex:1;text-align:center;font-size:17px;margin-right:84px;}
+.photo{flex-shrink:0;position:relative;height:200px;background:var(--photo-bg);display:flex;justify-content:center;overflow:hidden;}
+.photo img{height:100%;width:156px;object-fit:cover;object-position:top;transition:opacity .35s;}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.35);opacity:0;transition:opacity .25s;pointer-events:none;}
+.photo.busy .dim{opacity:1;}
+.processing{position:absolute;left:10px;right:10px;top:58px;background:rgba(40,40,40,.92);color:#fff;border-radius:10px;padding:10px;text-align:center;font-size:12px;line-height:1.45;opacity:0;transform:translateY(6px);transition:all .25s;pointer-events:none;}
+.photo.busy .processing{opacity:1;transform:none;}
+.animate-btn{position:absolute;right:10px;bottom:20px;height:30px;padding:0 12px;border-radius:15px;background:#fff;color:var(--accent);font-size:12px;font-weight:600;display:none;}
+.photo.done .animate-btn{display:block;}
+.toast{position:absolute;left:50%;top:12px;transform:translate(-50%,-8px);background:rgba(20,20,20,.86);color:#fff;font-size:12px;padding:7px 12px;border-radius:16px;white-space:nowrap;opacity:0;transition:all .25s;pointer-events:none;z-index:5;}
+.toast.show{opacity:1;transform:translate(-50%,0);}
+.scroll-area{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-top:-12px;background:var(--bg);border-radius:16px 16px 0 0;position:relative;z-index:2;padding:0 10px 16px;}
+.scroll-area::-webkit-scrollbar{display:none;}
+.grabber{display:flex;justify-content:center;padding:8px 0 4px;color:#222;}
+.tabs{position:sticky;top:0;z-index:20;background:var(--bg);display:flex;gap:14px;align-items:center;font-size:13px;padding:6px 0 10px;white-space:nowrap;overflow:hidden;}
+.tabs .on{background:var(--accent);color:#fff;font-weight:600;padding:4px 10px;border-radius:12px;}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;}
+.tile{height:88px;border:1px solid var(--border);border-radius:9px;background:#fff;overflow:hidden;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-size:10px;padding:0;}
+.tile img{width:100%;height:100%;object-fit:contain;}
+.tile.sel{border:2px solid var(--accent);}
+.upload .plus{width:22px;height:22px;border-radius:11px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;}
+.ai-tile{border:1.5px solid var(--accent);background:var(--tint);color:var(--accent-dark);font-weight:600;line-height:1.2;text-align:center;overflow:visible;}
+.ai-tile .new{position:absolute;top:-6px;right:-4px;background:var(--accent);color:#fff;font-size:8px;font-weight:700;padding:2px 4px;border-radius:7px;}
+.ai-tile svg{color:var(--accent);}
+.ai-tile .bar{display:none;width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.5);overflow:hidden;}
+.ai-tile .bar i{display:block;height:100%;width:0;background:var(--accent);}
+.ai-tile.loading{background:#7A7A7A;color:#fff;border:2px solid var(--accent);}
+.ai-tile.loading svg{color:#fff;}
+.ai-tile.loading .lbl{display:none;}
+.ai-tile.loading .bar{display:block;}
+.ai-tile.loading .bar i{animation:fill 3s linear forwards;}
+.ai-tile.done{border:2px solid var(--accent);}
+.ai-tile .ok{display:none;position:absolute;right:0;bottom:0;width:20px;height:20px;border-radius:7px 0 7px 0;background:#2DB84B;color:#fff;align-items:center;justify-content:center;}
+.ai-tile.done .ok{display:flex;}
+.ai-tile.done .new{display:none;}
+@keyframes fill{to{width:100%;}}
+.badge-ai{position:absolute;top:4px;left:4px;background:#222;color:#fff;font-size:8px;font-weight:700;padding:1px 4px;border-radius:5px;}
+.pop{animation:pop .45s cubic-bezier(.2,.9,.3,1.3);}
+@keyframes pop{from{transform:scale(.4);opacity:0;}to{transform:none;opacity:1;}}
+.tip{position:absolute;background:#222;color:#fff;font-size:11px;padding:6px 10px;border-radius:8px;white-space:nowrap;z-index:6;opacity:0;transition:opacity .25s;pointer-events:none;}
+.tip.show{opacity:1;}
+.divider{height:1px;background:#E6E6E6;margin:12px 0 10px;}
+.tpl{height:104px;border:1px solid var(--border);border-radius:9px;overflow:hidden;background:#fff;display:flex;flex-direction:column;padding:0;}
+.tpl img{width:100%;height:76px;object-fit:cover;object-position:top;background:#E9E9E9;}
+.tpl span{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-size:9px;line-height:1.15;color:#333;padding:0 2px;}
+.tab-bar{flex-shrink:0;height:calc(52px + var(--safe-bot));padding:0 10px var(--safe-bot);border-top:1px solid #EEE;display:flex;align-items:center;justify-content:space-between;background:#fff;position:relative;z-index:3;}
+.apply{color:#F2A7C0;}
+.apply.on{color:var(--accent);}
+/* panel */
+.panel{position:absolute;left:0;right:0;bottom:0;top:calc(var(--safe-top) + 44px + 188px);background:#fff;border-radius:16px 16px 0 0;z-index:10;display:flex;flex-direction:column;
+  transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);box-shadow:0 -6px 24px rgba(0,0,0,.08);}
+.panel.open{transform:none;}
+.panel-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;padding:6px 14px 12px;}
+.panel-head{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.panel-title{font-size:14px;font-weight:600;}
+.item-area{flex:1;min-height:0;border-radius:12px;background:#F6F6F6;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;transition:all .25s;}
+.item-area img{height:100%;max-height:200px;width:auto;max-width:80%;object-fit:contain;transition:filter .3s,opacity .3s,transform .25s;}
+.item-area .ai-chip{position:absolute;top:8px;left:8px;background:#222;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;}
+.shimmer{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#555;font-size:12px;background:rgba(242,242,242,.75);}
+.shimmer::before{content:"";position:absolute;top:0;bottom:0;width:90px;left:-120px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);transform:skewX(-18deg);animation:sweep 1.2s infinite;}
+.shimmer svg{color:var(--accent);position:relative;}
+.shimmer span{position:relative;}
+.shimmer .prog{position:relative;width:110px;height:4px;border-radius:2px;background:#DADADA;overflow:hidden;}
+.shimmer .prog i{display:block;height:100%;width:0;background:var(--accent);}
+.generating .shimmer{display:flex;}
+.generating .shimmer .prog i{animation:fill 2.4s linear forwards;}
+.generating .item-area img{filter:blur(6px);opacity:.5;}
+@keyframes sweep{to{left:120%;}}
+.edit-head{display:none;align-items:center;gap:10px;flex-shrink:0;}
+.edit-head .thumb{width:42px;height:48px;border-radius:8px;border:1px solid #E6E6E6;background:#F7F7F7;overflow:hidden;}
+.edit-head .thumb img{width:100%;height:100%;object-fit:contain;}
+.edit-head .t1{font-size:13px;font-weight:600;}
+.edit-head .t2{font-size:11px;color:var(--muted);}
+.edit-head .done-btn{margin-left:auto;color:var(--accent-dark);font-weight:600;font-size:13px;height:44px;padding:0 4px;}
+.composer{display:flex;gap:8px;align-items:flex-end;flex-shrink:0;}
+.composer textarea{flex:1;height:72px;border:1.5px solid var(--accent);border-radius:12px;padding:9px 10px;font-size:16px;line-height:1.35;font-family:inherit;resize:none;color:var(--text);outline:none;}
+.composer textarea:disabled{border-color:#E3E3E3;color:#8A8A8A;background:#FAFAFA;}
+.send{width:44px;height:44px;flex-shrink:0;border-radius:22px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.send.dark{background:#222;}
+.send:disabled{background:#E6E6E6;color:#A0A0A0;}
+.cta{height:44px;flex-shrink:0;border-radius:22px;background:var(--accent);color:#fff;font-size:15px;font-weight:600;}
+.cta:disabled{background:#F4C2D3;}
+.kb{flex-shrink:0;height:0;overflow:hidden;background:var(--kb);transition:height .25s cubic-bezier(.2,.8,.2,1);}
+.kb-in{height:200px;padding:0 2px;display:flex;flex-direction:column;}
+.kb .sug{height:32px;display:flex;align-items:center;font-size:13px;color:#111;}
+.kb .sug div{flex:1;text-align:center;}
+.kb .rows{display:flex;flex-direction:column;gap:9px;padding-top:3px;}
+.kb .r{display:flex;gap:4px;}
+.kb .k{flex:1;height:34px;background:#fff;border-radius:4px;box-shadow:0 1px 0 #898A8D;display:flex;align-items:center;justify-content:center;font-size:17px;color:#111;}
+.kb .k.d{background:var(--key-dark);flex:0 0 34px;}
+.kb .k.w{flex:0 0 66px;font-size:13px;}
+/* panel states */
+.st-input .item-area,.st-input .cta{display:none;}
+.st-input .kb,.st-editing .kb{height:200px;}
+.st-editing .item-area,.st-editing .cta,.st-editing .panel-head{display:none;}
+.st-editing .edit-head{display:flex;}
+.st-idea2 .item-area,.st-idea2 .cta,.st-idea2 .edit-head{display:none!important;}
+.st-idea2{}
+.st-idea2 .composer{margin-top:4px;}
+.st-idea2 .panel-body{justify-content:flex-start;}
+</style>
+</head>
+<body>
+<div class="device-wrap"><div class="phone-frame">
+  <div class="status-bar"><span>9:41</span><span class="sb-icons"><svg width="17" height="11" viewBox="0 0 18 12" fill="#000"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg width="15" height="11" viewBox="0 0 16 12" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"><path d="M1.5 4.5a9.5 9.5 0 0 1 13 0"/><path d="M4 7.2a6 6 0 0 1 8 0"/><circle cx="8" cy="10" r="1" fill="#000"/></svg><svg width="25" height="12" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="23" height="12" rx="3.5" stroke="#000" stroke-opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2" fill="#000"/></svg></span></div>
+  <header class="app-nav">
+    <button class="icon-btn" aria-label="Gallery"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M6 17l4-5 3 3 2-2 3 4"/><circle cx="15" cy="9" r="1.5"/></svg></button>
+    <button class="history">History</button>
+    <div class="nav-title">Wardrobe</div>
+  </header>
+  <div class="photo" id="photo">
+    <img src="assets/images/img-photo-model-01.jpg" alt="Your photo" loading="lazy" id="photoImg" onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-photo-model-01/240/300'">
+    <div class="dim"></div>
+    <div class="processing">Processing…<br>You can view the results later in History page.</div>
+    <button class="animate-btn">Animate Photo</button>
+    <div class="toast" id="toast"></div>
+  </div>
+  <div class="scroll-area" id="scroll-area">
+    <div class="grabber"><svg width="18" height="10" viewBox="0 0 20 12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3l7 6 7-6"/></svg></div>
+    <div class="tabs" id="top-tabs"><span class="on">My Wardrobe</span><span>HOT</span><span>New</span><span>Costume</span><span>Summer</span></div>
+    <div class="grid" id="grid" style="position:relative">
+      <button class="tile upload"><span class="plus"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>Upload</button>
+      <button class="tile ai-tile" id="aiTile"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M10 3l1.6 4.4L16 9l-4.4 1.6L10 15l-1.6-4.4L4 9l4.4-1.6z"/><path d="M18 13l.8 2.2L21 16l-2.2.8L18 19l-.8-2.2L15 16l2.2-.8z"/></svg><span class="lbl" id="aiLabel">Create<br>with AI</span><span class="bar"><i></i></span><span class="new">NEW</span><span class="ok"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></span></button>
+      <button class="tile item" data-kind="plain"><img src="assets/images/img-wardrobe-item-01.jpg" alt="Suede boots" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-wardrobe-item-01/240/300'"></button><button class="tile item" data-kind="plain"><img src="assets/images/img-wardrobe-item-02.jpg" alt="Cream skirt" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-wardrobe-item-02/240/300'"></button><button class="tile item" data-kind="plain"><img src="assets/images/img-wardrobe-item-03.jpg" alt="Leopard jacket" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-wardrobe-item-03/240/300'"></button><button class="tile item" data-kind="plain"><img src="assets/images/img-wardrobe-item-04.jpg" alt="Gold dress" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-wardrobe-item-04/240/300'"></button><button class="tile item" data-kind="plain"><img src="assets/images/img-wardrobe-item-05.jpg" alt="Knit cardigan" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-wardrobe-item-05/240/300'"></button><button class="tile item" data-kind="plain"><img src="assets/images/img-wardrobe-item-06.jpg" alt="Brown dress" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-wardrobe-item-06/240/300'"></button><button class="tile item" data-kind="plain"><img src="assets/images/img-wardrobe-item-07.jpg" alt="Brown trousers" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-wardrobe-item-07/240/300'"></button>
+      <div class="tip" id="tip"></div>
+    </div>
+    <div class="divider"></div>
+    <div class="grid"><button class="tpl"><img src="assets/images/img-hot-template-01.jpg" alt="" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-hot-template-01/240/300'"><span>Shadow Sorceress</span></button><button class="tpl"><img src="assets/images/img-hot-template-02.jpg" alt="" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-hot-template-02/240/300'"><span>Gothic Queen</span></button><button class="tpl"><img src="assets/images/img-hot-template-03.jpg" alt="" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-hot-template-03/240/300'"><span>Dragon Empress</span></button><button class="tpl"><img src="assets/images/img-hot-template-04.jpg" alt="" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-hot-template-04/240/300'"><span>Midnight Pixie</span></button><button class="tpl"><img src="assets/images/img-hot-template-05.jpg" alt="" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-hot-template-05/240/300'"><span>Edgy Jack</span></button><button class="tpl"><img src="assets/images/img-hot-template-06.jpg" alt="" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-hot-template-06/240/300'"><span>Punk Pumpkin</span></button><button class="tpl"><img src="assets/images/img-hot-template-07.jpg" alt="" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-hot-template-07/240/300'"><span>Chic Contrast</span></button><button class="tpl"><img src="assets/images/img-hot-template-08.jpg" alt="" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-hot-template-08/240/300'"><span>Preppy Pleats</span></button></div>
+  </div>
+  <div class="tab-bar"><button class="icon-btn" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button><button class="icon-btn apply" id="applyBtn" aria-label="Apply"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></button></div>
+  <div class="panel" id="panel"><div class="panel-body">
+      <div class="panel-head"><div class="panel-title" id="panelTitle" style="padding-left:2px">What do you want to wear?</div><button class="icon-btn" id="closeBtn" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>
+      <div class="composer"><label for="prompt" style="position:absolute;left:-9999px">Describe what to wear</label>
+        <textarea id="prompt" placeholder="e.g. white cropped shirt with puff sleeves and a black pleated mini skirt">Chocolate satin camisole with cream lace trim</textarea>
+        <button class="send" id="sendBtn" aria-label="Apply to photo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></button></div>
+    </div><div class="kb" id="kb" aria-hidden="true"><div class="kb-in"><div class="sug"><div>trim</div><div>trims</div><div>trimmed</div></div><div class="rows"><div class="r"><div class="k">q</div><div class="k">w</div><div class="k">e</div><div class="k">r</div><div class="k">t</div><div class="k">y</div><div class="k">u</div><div class="k">i</div><div class="k">o</div><div class="k">p</div></div><div class="r" style="padding:0 15px"><div class="k">a</div><div class="k">s</div><div class="k">d</div><div class="k">f</div><div class="k">g</div><div class="k">h</div><div class="k">j</div><div class="k">k</div><div class="k">l</div></div><div class="r"><div class="k d"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l8 8h-4.5v7h-7v-7H4z"/></svg></div><div class="k">z</div><div class="k">x</div><div class="k">c</div><div class="k">v</div><div class="k">b</div><div class="k">n</div><div class="k">m</div><div class="k d"><svg width="20" height="16" viewBox="0 0 26 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M8 2h16v16H8l-6-8z"/><path d="M12 7l6 6M18 7l-6 6"/></svg></div></div><div class="r"><div class="k d w">123</div><div class="k" style="font-size:13px">space</div><div class="k d w">return</div></div></div></div></div></div>
+</div></div>
+<script>
+
+function measureLayout(){var t=document.getElementById('top-tabs');if(t)t.style.top='0px';}
+measureLayout();
+(function(){
+  var MOBILE_MAX=480,DESIGN_W=320,root=document.documentElement;
+  var cs=getComputedStyle(root);
+  var BASE_SAFE_TOP=parseFloat(cs.getPropertyValue('--safe-top'))||48;
+  var BASE_SAFE_BOT=parseFloat(cs.getPropertyValue('--safe-bot'))||20;
+  function applyMobileScale(){
+    var frame=document.querySelector('.phone-frame');if(!frame)return;
+    if(window.innerWidth>MOBILE_MAX){frame.style.transform='';root.style.removeProperty('--mob-scale');root.style.removeProperty('--safe-top');root.style.removeProperty('--safe-bot');return;}
+    var scale=window.innerWidth/DESIGN_W;
+    frame.style.transformOrigin='top left';frame.style.transform='scale('+scale+')';
+    root.style.setProperty('--mob-scale',scale);
+    root.style.setProperty('--safe-top',(BASE_SAFE_TOP/scale)+'px');
+    root.style.setProperty('--safe-bot',(BASE_SAFE_BOT/scale)+'px');
+  }
+  applyMobileScale();
+  window.addEventListener('resize',function(){measureLayout();applyMobileScale();});
+  window.addEventListener('orientationchange',applyMobileScale);
+})();
+var $=function(id){return document.getElementById(id);};
+var IS_DESKTOP=function(){return window.innerWidth>480;};
+var toastT;
+function toast(msg,ms){var t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},ms||2200);}
+function tip(msg,anchor,ms){var t=$('tip'),g=$('grid');t.textContent=msg;t.style.left=(anchor.offsetLeft+anchor.offsetWidth/2-10)+'px';t.style.top=(anchor.offsetTop+anchor.offsetHeight+6)+'px';t.classList.add('show');setTimeout(function(){t.classList.remove('show');},ms||2600);}
+function setPanel(state){var p=$('panel');p.className='panel open '+state;}
+function closePanel(){var p=$('panel');p.classList.remove('open');$('prompt').blur();}
+function tryOn(done){var ph=$('photo');ph.classList.remove('done');ph.classList.add('busy');
+  setTimeout(function(){ph.classList.remove('busy');$('photoImg').style.opacity=0;
+    setTimeout(function(){$('photoImg').src='assets/images/img-photo-result-01.jpg';$('photoImg').style.opacity=1;ph.classList.add('done');$('applyBtn').classList.add('on');if(done)done();},200);},2600);}
+document.querySelectorAll('.tile.item[data-kind="plain"]').forEach(function(b){b.addEventListener('click',function(){toast('Prototype: try the Create with AI flow');});});
+document.querySelectorAll('.tpl').forEach(function(b){b.addEventListener('click',function(){toast('Prototype: templates are not wired');});});
+
+
+var hasResult=false,busy=false;
+function openPrompt(){if(busy)return;$('panelTitle').textContent=hasResult?'Edit your prompt':'What do you want to wear?';setPanel('st-idea2 st-input');
+  if(IS_DESKTOP())setTimeout(function(){var t=$('prompt');t.focus();t.setSelectionRange(t.value.length,t.value.length);},320);}
+$('aiTile').addEventListener('click',openPrompt);
+$('closeBtn').addEventListener('click',closePanel);
+function apply(){var v=$('prompt').value.trim();if(!v){toast('Describe what to wear first');return;}
+  closePanel();busy=true;var tile=$('aiTile');tile.classList.remove('done');
+  var bar=tile.querySelector('.bar i');bar.style.animation='none';void bar.offsetWidth;bar.style.animation='';tile.classList.add('loading');
+  tryOn(function(){busy=false;hasResult=true;tile.classList.remove('loading');tile.classList.add('done');$('aiLabel').innerHTML='Edit prompt';tip('Tap again to keep editing',tile,3000);});
+  setTimeout(function(){tile.classList.remove('loading');},2700);}
+$('sendBtn').addEventListener('click',apply);
+$('prompt').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();apply();}});
+
+</script>
+</body>
+</html>
