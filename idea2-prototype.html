@@ -228,7 +228,7 @@ $('applyBtn').addEventListener('click',function(){location.href='index.html';});
 
 var hasResult=false,busy=false;
 function openPrompt(){if(busy)return;$('panelTitle').textContent=hasResult?'Edit your prompt':'What do you want to wear?';setPanel('st-idea2 st-input');
-  setTimeout(function(){var t=$('prompt');t.focus({preventScroll:true});t.setSelectionRange(t.value.length,t.value.length);},320);}
+  var t=$('prompt');t.focus({preventScroll:true});t.setSelectionRange(t.value.length,t.value.length);}
 $('aiTile').addEventListener('click',openPrompt);
 $('closeBtn').addEventListener('click',closePanel);
 function apply(){var v=$('prompt').value.trim();if(!v){toast('Describe what to wear first');return;}
