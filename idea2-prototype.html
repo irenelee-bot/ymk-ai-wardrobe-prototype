@@ -129,7 +129,7 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 .st-idea2 .item-area,.st-idea2 .cta,.st-idea2 .edit-head{display:none!important;}
 .st-idea2{}
 .st-idea2 .composer{margin-top:4px;}
-.st-idea2 .panel-body{justify-content:flex-start;}
+.st-idea2 .panel-body{justify-content:space-between;}
 </style>
 </head>
 <body>
@@ -219,7 +219,7 @@ $('applyBtn').addEventListener('click',function(){location.href='index.html';});
 
 var hasResult=false,busy=false;
 function openPrompt(){if(busy)return;$('panelTitle').textContent=hasResult?'Edit your prompt':'What do you want to wear?';setPanel('st-idea2 st-input');
-  if(IS_DESKTOP())setTimeout(function(){var t=$('prompt');t.focus({preventScroll:true});t.setSelectionRange(t.value.length,t.value.length);},320);}
+  setTimeout(function(){var t=$('prompt');t.focus({preventScroll:true});t.setSelectionRange(t.value.length,t.value.length);},320);}
 $('aiTile').addEventListener('click',openPrompt);
 $('closeBtn').addEventListener('click',closePanel);
 function apply(){var v=$('prompt').value.trim();if(!v){toast('Describe what to wear first');return;}

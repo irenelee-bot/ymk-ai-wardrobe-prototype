@@ -129,6 +129,7 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 /* panel states */
 .st-input .item-area,.st-input .cta{display:none;}
 .st-input .kb,.st-editing .kb{height:220px;}
+.st-input .panel-body,.st-editing .panel-body{justify-content:space-between;}
 .st-editing .item-area,.st-editing .cta,.st-editing .panel-head{display:none;}
 .st-editing .edit-head{display:flex;}
 .st-idea2 .item-area,.st-idea2 .cta,.st-idea2 .edit-head{display:none!important;}
@@ -283,7 +284,7 @@ function go(s){state=s;setPanel('st-'+s);
   send.classList.toggle('dark',regen);send.innerHTML=regen?REGEN:UP;send.setAttribute('aria-label',regen?'Regenerate':'Generate item');}
 var UP=$('sendBtn').innerHTML;
 var REGEN='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/></svg>';
-$('aiTile').addEventListener('click',function(){$('prompt').value='Chocolate satin camisole with cream lace trim';go('input');if(IS_DESKTOP())setTimeout(function(){$('prompt').focus({preventScroll:true});},320);});
+$('aiTile').addEventListener('click',function(){$('prompt').value='Chocolate satin camisole with cream lace trim';go('input');setTimeout(function(){$('prompt').focus({preventScroll:true});},320);});
 $('closeBtn').addEventListener('click',function(){closePanel();state='closed';});
 function generate(){var v=$('prompt').value.trim();if(!v){toast('Describe an item first');return;}
   lastPrompt=v;$('prompt').blur();go('generating');
