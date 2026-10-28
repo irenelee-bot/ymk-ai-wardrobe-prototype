@@ -86,7 +86,8 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 .panel{position:absolute;left:0;right:0;bottom:0;top:calc(var(--safe-top) + 44px + 188px);background:#fff;border-radius:16px 16px 0 0;z-index:10;display:flex;flex-direction:column;
   transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);box-shadow:0 -6px 24px rgba(0,0,0,.08);}
 .panel.open{transform:none;}
-.panel-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;padding:6px 14px 12px;}
+.panel.st-input,.panel.st-editing{top:auto;height:auto;max-height:70%;}
+.panel-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;padding:6px 14px 8px;}
 .panel-head{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .panel-title{font-size:14px;font-weight:600;}
 .item-area{flex:1;min-height:0;border-radius:12px;background:#F6F6F6;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;transition:all .25s;}
