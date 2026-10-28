@@ -26,9 +26,9 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 .app-nav{flex-shrink:0;padding-top:var(--safe-top);height:calc(var(--safe-top) + 44px);display:flex;align-items:center;gap:8px;padding-left:8px;padding-right:8px;}
 .icon-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:22px;}
 .history{height:28px;padding:0 12px;border-radius:14px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;}
-.nav-title{flex:1;text-align:center;font-size:17px;}
-.credits{display:flex;align-items:center;gap:4px;height:26px;padding:0 9px;border-radius:13px;background:#F6F6F6;border:1px solid var(--border);font-size:13px;font-weight:700;color:#333;flex-shrink:0;}
-.credits svg{color:var(--accent);flex-shrink:0;}
+.nav-title{flex:1;text-align:center;font-size:17px;margin-right:84px;}
+.credits{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px 0 5px;border-radius:12px;background:#FFF6D6;color:#6B4E00;font-size:12px;font-weight:600;flex-shrink:0;}
+.credits svg{flex-shrink:0;}
 .credits.pulse{animation:creditPulse .4s ease-out;}
 @keyframes creditPulse{0%{transform:scale(1);}35%{transform:scale(1.18);color:var(--accent-dark);}100%{transform:scale(1);}}
 .photo{flex-shrink:0;position:relative;height:200px;background:var(--photo-bg);display:flex;justify-content:center;overflow:hidden;}
@@ -83,13 +83,14 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 .apply{color:#F2A7C0;}
 .apply.on{color:var(--accent);}
 /* panel */
-.panel{position:absolute;left:0;right:0;bottom:0;top:calc(var(--safe-top) + 44px + 188px);background:#fff;border-radius:16px 16px 0 0;z-index:10;display:flex;flex-direction:column;
+/* short screens (iPhone SE): let the result panel rise over the photo so the item card keeps ~150px */
+.panel{position:absolute;left:0;right:0;bottom:0;top:min(calc(var(--safe-top) + 44px + 188px),calc(100% - 370px));background:#fff;border-radius:16px 16px 0 0;z-index:10;display:flex;flex-direction:column;
   transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);box-shadow:0 -6px 24px rgba(0,0,0,.08);}
 .panel.open{transform:none;}
 .panel.st-input,.panel.st-editing{top:auto;height:auto;max-height:70%;}
-.panel-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;padding:6px 14px 8px;}
-.panel-head{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.panel-title{font-size:14px;font-weight:600;}
+.panel-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;padding:6px 13px 8px;}
+.panel-head{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:relative;}
+.panel-title{font-size:14px;font-weight:600;position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;}
 .item-area{flex:1;min-height:0;border-radius:12px;background:#F6F6F6;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;transition:all .25s;}
 .item-area img{height:100%;max-height:200px;width:auto;max-width:80%;object-fit:contain;transition:filter .3s,opacity .3s,transform .25s;}
 .item-area .ai-chip{position:absolute;top:8px;left:8px;background:#222;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;}
@@ -108,16 +109,28 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 .edit-head .thumb img{width:100%;height:100%;object-fit:contain;transition:opacity .2s;}
 .edit-head .t1{font-size:13px;font-weight:600;}
 .edit-head .t2{font-size:11px;color:var(--muted);}
-.edit-head .done-btn{margin-left:auto;color:var(--accent-dark);font-weight:600;font-size:13px;height:44px;padding:0 4px;}
-.composer{display:flex;gap:8px;align-items:flex-end;flex-shrink:0;}
-.composer textarea{flex:1;height:72px;border:1.5px solid var(--accent);border-radius:12px;padding:9px 10px;font-size:16px;line-height:1.35;font-family:inherit;resize:none;color:var(--text);outline:none;}
-.composer textarea:disabled{border-color:#E3E3E3;color:#8A8A8A;background:#FAFAFA;}
-.send{width:44px;height:44px;flex-shrink:0;border-radius:22px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;transition:background .2s;}
-.send.dark{background:#222;}
-.send:disabled{background:#E6E6E6;color:#A0A0A0;}
+.edit-head .credits{margin-left:auto;}
+.edit-head .done-btn{color:var(--accent-dark);font-weight:600;font-size:13px;height:44px;padding:0 4px;}
+/* composer — shared by Idea 1 / 2 / 3 */
+.composer{flex-shrink:0;border:1.5px solid var(--accent);border-radius:14px;padding:8px 9px;display:flex;flex-direction:column;gap:6px;background:#fff;transition:border-color .2s,background .2s;}
+.composer textarea{display:block;width:100%;height:44px;border:0;padding:0;font-size:16px;line-height:1.35;font-family:inherit;resize:none;color:var(--text);outline:none;background:transparent;}
+.composer.clean{border-color:var(--border);}
+.composer.busy{border-color:#E3E3E3;background:#FAFAFA;}
+.composer.busy textarea{color:#8A8A8A;}
+.comp-row{display:flex;align-items:center;justify-content:space-between;gap:4px;}
+.ref{display:flex;align-items:center;gap:8px;min-width:0;}
+.ref-btn{height:32px;padding:0 8px;border:1px solid var(--border);border-radius:16px;background:#fff;display:flex;align-items:center;gap:4px;font-size:12px;color:#222;white-space:nowrap;}
+.ref-thumb{position:relative;width:24px;height:33px;border:1px solid #E6E6E6;border-radius:5px;background:#F7F7F7;flex-shrink:0;}
+.ref-thumb img{width:100%;height:100%;object-fit:contain;border-radius:5px;display:block;}
+.ref-x{position:absolute;top:-5px;right:-7px;width:15px;height:15px;border-radius:8px;background:#6B6B6B;color:#fff;border:1px solid #fff;display:flex;align-items:center;justify-content:center;}
+.ref-swap{width:32px;height:32px;border:1px solid var(--border);border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;color:#222;}
+.ref:not(.has) .ref-thumb,.ref:not(.has) .ref-swap,.ref.has .ref-btn{display:none;}
+.ref button:disabled{opacity:.5;}
+.gen{height:32px;padding:0 10px;border-radius:16px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;transition:background .2s;}
+.gen.dark{background:#222;}
+.gen:disabled,.gen.broke{background:#E6E6E6;color:#A0A0A0;}
 .cta{height:44px;flex-shrink:0;border-radius:22px;background:var(--accent);color:#fff;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:4px;}
 .cta:disabled{background:#F4C2D3;}
-.cta .cost{display:inline-flex;align-items:center;gap:2px;font-size:13px;font-weight:700;opacity:.9;}
 .kb{flex-shrink:0;height:0;overflow:hidden;background:var(--kb);transition:height .25s cubic-bezier(.2,.8,.2,1);}
 .kb-in{height:100%;padding:0 14px 16px;display:flex;flex-direction:column;}
 .kb .sug{height:32px;display:flex;align-items:center;font-size:13px;color:#111;}
@@ -158,7 +171,6 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
     <button class="icon-btn" aria-label="Gallery"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M6 17l4-5 3 3 2-2 3 4"/><circle cx="15" cy="9" r="1.5"/></svg></button>
     <button class="history">History</button>
     <div class="nav-title">Wardrobe</div>
-    <div class="credits" id="credits" aria-label="Credits balance"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><use href="#creditCoinIcon"/></svg><span id="creditsNum">100</span></div>
   </header>
   <div class="photo" id="photo">
     <img src="assets/images/img-photo-model-01.jpg" alt="Your photo" loading="lazy" id="photoImg" onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-photo-model-01/240/300'">
@@ -181,14 +193,18 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
   </div>
   <div class="tab-bar"><button class="icon-btn" id="tabClose" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button><button class="icon-btn apply" id="applyBtn" aria-label="Apply"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></button></div>
   <div class="panel" id="panel"><div class="panel-body">
-      <div class="panel-head"><button class="icon-btn" id="closeBtn" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button><div class="panel-title">Create with AI</div><div style="width:44px"></div></div>
-      <div class="edit-head"><div class="thumb"><img src="assets/images/img-ai-item-01.jpg" alt="Current AI item" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-ai-item-01/240/300'"></div><div><div class="t1">Editing your item</div><div class="t2">Change the prompt, then regenerate</div></div><button class="done-btn" id="doneBtn">Done</button></div>
+      <div class="panel-head"><button class="icon-btn" id="closeBtn" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button><div class="panel-title">Create with AI</div><div class="credits" aria-label="Credits balance"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><use href="#creditCoinIcon"/></svg><span class="credits-num">100</span></div></div>
+      <div class="edit-head"><div class="thumb"><img src="assets/images/img-ai-item-01.jpg" alt="Current AI item" loading="lazy"  onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-ai-item-01/240/300'"></div><div><div class="t1">Editing your item</div><div class="t2">Edit, then generate</div></div><div class="credits" aria-label="Credits balance"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><use href="#creditCoinIcon"/></svg><span class="credits-num">100</span></div><button class="done-btn" id="doneBtn">Done</button></div>
       <div class="item-area" id="itemArea"><img src="assets/images/img-ai-item-01.jpg" alt="Generated item" loading="lazy" id="itemImg" onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-ai-item-01/240/300'"><span class="ai-chip">AI</span>
         <div class="shimmer"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M10 3l1.6 4.4L16 9l-4.4 1.6L10 15l-1.6-4.4L4 9l4.4-1.6z"/><path d="M18 13l.8 2.2L21 16l-2.2.8L18 19l-.8-2.2L15 16l2.2-.8z"/></svg><span>Creating your item…</span><div class="prog"><i></i></div></div></div>
-      <div class="composer"><label for="prompt" style="position:absolute;left:-9999px">Describe an item</label>
+      <div class="composer" id="composer"><label for="prompt" style="position:absolute;left:-9999px">Describe an item</label>
         <textarea id="prompt" placeholder="Describe one item, e.g. black velvet blazer with gold buttons">Chocolate satin camisole with cream lace trim</textarea>
-        <button class="send" id="sendBtn" aria-label="Generate item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div>
-      <button class="cta" id="addBtn">Add to My Wardrobe <span class="cost">· 20 <svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><use href="#creditCoinIcon"/></svg></span></button>
+        <div class="comp-row"><div class="ref" id="ref">
+          <button class="ref-btn" id="refBtn" aria-label="Add reference image"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M6 17l4-5 3 3 2-2 3 4"/></svg>Reference</button>
+          <span class="ref-thumb"><img id="refImg" alt="Reference image" onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-wardrobe-item-04/240/300'"><button class="ref-x" id="refX" aria-label="Remove reference image"><svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button></span>
+          <button class="ref-swap" id="refSwap" aria-label="Replace reference image"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M6 17l4-5 3 3 2-2 3 4"/></svg></button>
+        </div><button class="gen" id="sendBtn"></button></div></div>
+      <button class="cta" id="addBtn">Add to My Wardrobe</button>
     </div><div class="kb" id="kb" aria-hidden="true"><div class="kb-in"><div class="sug"><div>trim</div><div>trims</div><div>trimmed</div></div><div class="rows"><div class="r"><div class="k">q</div><div class="k">w</div><div class="k">e</div><div class="k">r</div><div class="k">t</div><div class="k">y</div><div class="k">u</div><div class="k">i</div><div class="k">o</div><div class="k">p</div></div><div class="r" style="padding:0 15px"><div class="k">a</div><div class="k">s</div><div class="k">d</div><div class="k">f</div><div class="k">g</div><div class="k">h</div><div class="k">j</div><div class="k">k</div><div class="k">l</div></div><div class="r"><div class="k d"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l8 8h-4.5v7h-7v-7H4z"/></svg></div><div class="k">z</div><div class="k">x</div><div class="k">c</div><div class="k">v</div><div class="k">b</div><div class="k">n</div><div class="k">m</div><div class="k d"><svg width="20" height="16" viewBox="0 0 26 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M8 2h16v16H8l-6-8z"/><path d="M12 7l6 6M18 7l-6 6"/></svg></div></div><div class="r"><div class="k d w">123</div><div class="k" style="font-size:13px">space</div><div class="k d w">return</div></div></div></div></div></div>
 </div></div>
 <script>
@@ -260,11 +276,18 @@ function closePanel(){var p=$('panel');p.classList.remove('open');$('prompt').bl
 function tryOn(done){var ph=$('photo');ph.classList.remove('done');ph.classList.add('busy');
   setTimeout(function(){ph.classList.remove('busy');$('photoImg').style.opacity=0;
     setTimeout(function(){$('photoImg').src='assets/images/img-photo-result-01.jpg';$('photoImg').style.opacity=1;ph.classList.add('done');$('applyBtn').classList.add('on');if(done)done();},200);},2600);}
-var ADD_COST=20,credits=100;
-function renderCredits(){$('creditsNum').textContent=credits;}
+/* credits + composer — shared by Idea 1 / 2 / 3 */
+var GEN_COST=10,credits=100;
+var REF_IMGS=['assets/images/img-wardrobe-item-04.jpg','assets/images/img-wardrobe-item-06.jpg','assets/images/img-wardrobe-item-02.jpg'];
+var refIdx=-1,lastGen=null,genBusy=false;
+var ICON_GEN='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M10 3l1.6 4.4L16 9l-4.4 1.6L10 15l-1.6-4.4L4 9l4.4-1.6z"/></svg>';
+var ICON_REGEN='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/></svg>';
+function renderCredits(){document.querySelectorAll('.credits-num').forEach(function(n){n.textContent=credits;});}
+function visibleChip(){var cs=document.querySelectorAll('.credits');for(var i=0;i<cs.length;i++){if(cs[i].offsetParent)return cs[i];}return cs[0];}
 function spendCredits(n,anchorEl){
-  var frame=document.querySelector('.phone-frame'),chip=$('credits');
-  var r1=relRect(anchorEl),r2=relRect(chip);
+  var frame=document.querySelector('.phone-frame');
+  var r1=relRect(anchorEl),r2=relRect(visibleChip());
+  credits=Math.max(0,credits-n);renderComposer();
   var fly=document.createElement('div');fly.textContent='-'+n;
   fly.style.cssText='position:absolute;z-index:50;font-size:13px;font-weight:700;color:var(--accent);pointer-events:none;'
     +'left:'+(r1.left+r1.width/2-16)+'px;top:'+(r1.top-4)+'px;transition:left .5s ease-out,top .5s ease-out,opacity .5s ease-out;opacity:1;';
@@ -273,11 +296,35 @@ function spendCredits(n,anchorEl){
     fly.style.left=(r2.left+r2.width/2-16)+'px';fly.style.top=(r2.top-18)+'px';fly.style.opacity='0';
   });});
   setTimeout(function(){
-    fly.remove();
-    credits=Math.max(0,credits-n);renderCredits();
-    chip.classList.remove('pulse');void chip.offsetWidth;chip.classList.add('pulse');
+    fly.remove();renderCredits();
+    var chip=visibleChip();chip.classList.remove('pulse');void chip.offsetWidth;chip.classList.add('pulse');
   },480);
 }
+function composerInput(){return {prompt:$('prompt').value.trim(),ref:refIdx};}
+// Same {prompt, reference} as the last generation -> Regenerate (dark); any change -> Generate (pink).
+function isClean(){var c=composerInput();return !!lastGen&&c.prompt===lastGen.prompt&&c.ref===lastGen.ref;}
+function markGenerated(){lastGen=composerInput();}
+function resetComposer(text){$('prompt').value=text||'';refIdx=-1;lastGen=null;renderComposer();}
+function renderComposer(){
+  var empty=!$('prompt').value.trim(),regen=!genBusy&&!empty&&isClean();
+  var comp=$('composer'),btn=$('sendBtn');
+  comp.classList.toggle('busy',genBusy);comp.classList.toggle('clean',!genBusy&&(empty||regen));
+  $('prompt').disabled=genBusy;btn.disabled=genBusy||empty;
+  btn.classList.toggle('dark',regen);btn.classList.toggle('broke',!genBusy&&!empty&&credits<GEN_COST);
+  btn.innerHTML=empty?ICON_GEN+'Generate':(regen?ICON_REGEN+'Regenerate':ICON_GEN+'Generate')+' · '+GEN_COST+' credits';
+  btn.setAttribute('aria-label',regen?'Regenerate':'Generate');
+  $('ref').classList.toggle('has',refIdx>=0);
+  if(refIdx>=0&&$('refImg').getAttribute('src')!==REF_IMGS[refIdx])$('refImg').setAttribute('src',REF_IMGS[refIdx]);
+  $('ref').querySelectorAll('button').forEach(function(b){b.disabled=genBusy;});
+}
+function canAfford(){if(credits<GEN_COST){toast('Not enough credits');return false;}return true;}
+// Prototype: "picking" a reference just drops in a wardrobe image; the swap button cycles through a few.
+$('refBtn').addEventListener('click',function(){refIdx=0;renderComposer();});
+$('refSwap').addEventListener('click',function(){refIdx=(refIdx+1)%REF_IMGS.length;renderComposer();});
+$('refX').addEventListener('click',function(){refIdx=-1;renderComposer();});
+$('prompt').addEventListener('input',renderComposer);
+// Keep the textarea focused (and the keyboard up) when tapping composer buttons or the mock keyboard.
+document.querySelectorAll('#composer button,.kb').forEach(function(el){el.addEventListener('mousedown',function(e){e.preventDefault();});});
 renderCredits();
 document.querySelectorAll('.tile.item[data-kind="plain"]').forEach(function(b){b.addEventListener('click',function(){toast('Prototype: try the Create with AI flow');});});
 document.querySelectorAll('.tpl').forEach(function(b){b.addEventListener('click',function(){toast('Prototype: templates are not wired');});});
@@ -285,19 +332,16 @@ $('tabClose').addEventListener('click',function(){location.href='index.html';});
 $('applyBtn').addEventListener('click',function(){location.href='index.html';});
 
 
-var state='closed',variant=0,lastPrompt='';
+var state='closed',variant=0;
 var FILTERS=['none','hue-rotate(-12deg) saturate(1.15)','sepia(.35) saturate(1.2)'];
-function go(s){state=s;setPanel('st-'+s);
-  var ta=$('prompt'),send=$('sendBtn'),add=$('addBtn');
-  ta.disabled=(s==='generating');send.disabled=(s==='generating');add.disabled=(s!=='result');
-  var regen=(s==='result'||s==='editing');
-  send.classList.toggle('dark',regen);send.innerHTML=regen?REGEN:UP;send.setAttribute('aria-label',regen?'Regenerate':'Generate item');}
-var UP=$('sendBtn').innerHTML;
-var REGEN='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/></svg>';
-$('aiTile').addEventListener('click',function(){$('prompt').value='Chocolate satin camisole with cream lace trim';go('input');$('prompt').focus({preventScroll:true});});
+function go(s){state=s;setPanel('st-'+s);genBusy=(s==='generating');$('addBtn').disabled=(s!=='result');renderComposer();}
+renderComposer();
+$('aiTile').addEventListener('click',function(){resetComposer('Chocolate satin camisole with cream lace trim');go('input');$('prompt').focus({preventScroll:true});});
 $('closeBtn').addEventListener('click',function(){closePanel();state='closed';});
 function generate(){var v=$('prompt').value.trim();if(!v){toast('Describe an item first');return;}
-  lastPrompt=v;$('prompt').blur();go('generating');
+  if(!canAfford())return;
+  spendCredits(GEN_COST,$('sendBtn'));markGenerated();
+  state='generating';$('prompt').blur();go('generating');
   setTimeout(function(){var im=$('itemImg');im.style.filter=FILTERS[variant%FILTERS.length];variant++;im.style.transform='scale(.96)';go('result');requestAnimationFrame(function(){im.style.transform='scale(1)';});
     document.querySelectorAll('.edit-head .thumb img').forEach(function(t){t.style.filter=im.style.filter;});},2400);}
 $('sendBtn').addEventListener('click',generate);
@@ -323,7 +367,6 @@ $('prompt').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftK
 $('addBtn').addEventListener('click',function(){
   var im=$('itemImg');
   var snap={rect:relRect(im),src:im.getAttribute('src'),filter:im.style.filter};
-  spendCredits(ADD_COST,$('addBtn'));
   closePanel();state='closed';
   var newBadge=document.querySelector('#aiTile .new');if(newBadge)newBadge.style.display='none';
   var b=document.createElement('button');b.className='tile item';b.setAttribute('aria-label','AI satin camisole');

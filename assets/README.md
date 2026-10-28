@@ -14,7 +14,7 @@ Drop the file into the matching folder using the filename below — no code chan
 | 檔名 | 用途 / 出現位置 | 尺寸 | 格式 | 狀態 |
 |---|---|---|---|---|
 | `img-photo-model-01.jpg` | 上方照片預覽 — 使用者原始照片 | 312×400 (≈3:4) | JPG | 🟡 截圖裁切 |
-| `img-photo-result-01.jpg` | 試穿結果照片（Idea #1 點 AI 單品後 / Idea #2 生成後） | 312×400 (≈3:4) | JPG | 🟡 截圖裁切，解析度低 |
+| `img-photo-result-01.jpg` | 試穿結果照片（Idea #1、#3 點 AI 單品後 / Idea #2 生成後） | 312×400 (≈3:4) | JPG | 🟡 截圖裁切，解析度低 |
 | `img-ai-item-01.jpg` | AI 生成的單品（Idea #1 結果卡、衣櫃新格子、編輯縮圖） | 400×500 去背/白底 | JPG | 🟡 截圖裁切 |
 | `img-wardrobe-item-01.jpg` | My Wardrobe 單品 #1（靴子） | 140×176 白底 | JPG | 🟡 截圖裁切 |
 | `img-wardrobe-item-02.jpg` | My Wardrobe 單品 #2（米白裙） | 140×176 白底 | JPG | 🟡 截圖裁切 |
@@ -31,6 +31,8 @@ Drop the file into the matching folder using the filename below — no code chan
 | `img-hot-template-06.jpg` | HOT 模板 Punk Pumpkin | 140×152 | JPG | 🟡 截圖裁切 |
 | `img-hot-template-07.jpg` | HOT 模板 Chic Contrast | 140×152 | JPG | 🟡 截圖裁切 |
 | `img-hot-template-08.jpg` | HOT 模板 Preppy Pleats | 140×152 | JPG | 🟡 截圖裁切 |
+
+> **Idea #3**（`idea3-prototype.html`）沿用上表同一批圖，無新增素材：Photo picker 用 `img-wardrobe-item-01`～`07`、`img-ai-item-01`、`img-hot-template-01/05/06/07`；Reference 參考圖用 `img-wardrobe-item-04`（替換鈕會輪換 `-06`、`-02`）。
 
 ## videos/
 
