@@ -15,9 +15,9 @@ html,body{width:100%;height:100%;background:#111;overflow:hidden;position:fixed;
   box-shadow:0 0 0 1px rgba(255,255,255,.13),0 0 0 8px #161616,0 0 0 9px rgba(255,255,255,.07),0 40px 80px rgba(0,0,0,.9);}
 @media (min-width:481px){:root{--safe-top:48px;}.status-bar{display:flex;}}
 @media (max-width:480px){
-  html,body{background:var(--bg);height:100dvh;}
-  .device-wrap{display:block;padding:0;background:var(--bg);overflow:hidden;height:100dvh;min-height:0;}
-  .phone-frame{width:320px!important;height:calc(100dvh / var(--mob-scale,1))!important;border-radius:0!important;box-shadow:none!important;transform-origin:top left;}
+  html,body{background:var(--bg);height:var(--vvh,100dvh);}
+  .device-wrap{display:block;padding:0;background:var(--bg);overflow:hidden;height:var(--vvh,100dvh);min-height:0;}
+  .phone-frame{width:320px!important;height:calc(var(--vvh,100dvh) / var(--mob-scale,1))!important;border-radius:0!important;box-shadow:none!important;transform-origin:top left;}
   .kb{display:none!important;}
 }
 .status-bar{position:absolute;top:0;left:0;right:0;height:var(--safe-top);display:none;align-items:flex-end;justify-content:space-between;padding:0 24px 10px 30px;z-index:150;pointer-events:none;font-size:14px;font-weight:600;color:#000;}
@@ -220,9 +220,18 @@ measureLayout();
     root.style.setProperty('--safe-top',(BASE_SAFE_TOP/scale)+'px');
     root.style.setProperty('--safe-bot',(BASE_SAFE_BOT/scale)+'px');
   }
+  function updateVVH(){
+    var h=window.visualViewport?window.visualViewport.height:window.innerHeight;
+    root.style.setProperty('--vvh',h+'px');
+  }
+  updateVVH();
   applyMobileScale();
-  window.addEventListener('resize',function(){measureLayout();applyMobileScale();});
+  window.addEventListener('resize',function(){measureLayout();applyMobileScale();updateVVH();});
   window.addEventListener('orientationchange',applyMobileScale);
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',updateVVH);
+    window.visualViewport.addEventListener('scroll',updateVVH);
+  }
 })();
 var $=function(id){return document.getElementById(id);};
 var IS_DESKTOP=function(){return window.innerWidth>480;};
