@@ -57,8 +57,7 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 .custom-tile{font-size:11px;font-weight:600;gap:6px;color:#222;}
 .custom-tile .plus{width:24px;height:24px;border-radius:12px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;}
 .custom-tile .new{position:absolute;top:4px;right:4px;background:var(--accent);color:#fff;font-size:8px;font-weight:700;padding:2px 4px;border-radius:7px;}
-.new-dot{position:absolute;top:5px;left:5px;width:7px;height:7px;border-radius:4px;background:var(--accent);}
-.new-dot.r{left:auto;right:5px;}
+.new-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:4px;background:var(--accent);}
 @keyframes fill{to{width:100%;}}
 .badge-ai{position:absolute;top:4px;left:4px;background:#222;color:#fff;font-size:8px;font-weight:700;padding:1px 4px;border-radius:5px;}
 .pop{animation:pop .45s cubic-bezier(.2,.9,.3,1.3);}
@@ -137,6 +136,10 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 .ai-card-title{display:none;align-items:center;gap:7px;font-size:14px;font-weight:700;padding-left:2px;}
 .ai-card-title svg{color:var(--accent);}
 .st-custom .pick-card,.st-custom .or,.st-custom .ai-card-title{display:flex;}
+/* Over the textarea while the tall Custom / Preview layout is up: tapping it switches to the keyboard layout first */
+#composer{position:relative;}
+.ta-catch{display:none;position:absolute;left:0;right:0;top:0;height:56px;z-index:1;}
+.st-custom .ta-catch,.st-preview .ta-catch{display:block;}
 .st-custom .ai-card{flex:none;background:var(--tint);border:1.5px solid #F7C9D8;border-radius:15px;padding:11px;gap:8px;}
 .st-custom .composer.clean{border-color:#EBD3DB;}
 .st-custom .panel-head .credits{visibility:hidden;}
@@ -217,6 +220,7 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
         <div class="shimmer"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M10 3l1.6 4.4L16 9l-4.4 1.6L10 15l-1.6-4.4L4 9l4.4-1.6z"/><path d="M18 13l.8 2.2L21 16l-2.2.8L18 19l-.8-2.2L15 16l2.2-.8z"/></svg><span>Creating your item…</span><div class="prog"><i></i></div></div></div>
       <div class="composer" id="composer"><label for="prompt" style="position:absolute;left:-9999px">Describe an item</label>
         <textarea id="prompt" placeholder="e.g. chocolate satin camisole with cream lace trim"></textarea>
+        <button class="ta-catch" id="taCatch" aria-label="Describe an item"></button>
         <div class="comp-row"><div class="ref" id="ref">
           <button class="ref-btn" id="refBtn" aria-label="Add reference image"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M6 17l4-5 3 3 2-2 3 4"/></svg>Reference</button>
           <span class="ref-thumb"><img id="refImg" alt="Reference image" onerror="this.onerror=null;this.src='https://picsum.photos/seed/img-wardrobe-item-04/240/300'"><button class="ref-x" id="refX" aria-label="Remove reference image"><svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button></span>
@@ -408,6 +412,10 @@ $('prompt').addEventListener('focus',function(){window.scrollTo(0,0);document.bo
   if(state==='custom')go('describe');
   else if(state==='preview')go('editing');
 });
+// A native tap-to-focus here lets iOS pan the page to the (low) textarea, then the panel collapses and the frame
+// jumps. Like Idea 1's entry: switch to the compact layout, then focus with preventScroll inside the same tap.
+$('taCatch').addEventListener('click',function(){go(state==='preview'?'editing':'describe');
+  var t=$('prompt');t.focus({preventScroll:true});t.setSelectionRange(t.value.length,t.value.length);});
 $('prompt').addEventListener('blur',function(){if(state==='editing')go('preview');});
 $('prompt').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();generate();}});
 $('addBtn').addEventListener('click',function(){
@@ -415,7 +423,7 @@ $('addBtn').addEventListener('click',function(){
   var snap={rect:relRect(im),src:im.getAttribute('src'),filter:im.style.filter};
   closePanel();state='closed';hideNew();
   var b=document.createElement('button');b.className='tile item';b.setAttribute('aria-label','AI satin camisole');
-  b.innerHTML='<img src="'+snap.src+'" alt="AI satin camisole" onerror="this.onerror=null;this.src=\'https://picsum.photos/seed/img-ai-item-01/240/300\'"><span class="badge-ai">AI</span><span class="new-dot r"></span>';
+  b.innerHTML='<img src="'+snap.src+'" alt="AI satin camisole" onerror="this.onerror=null;this.src=\'https://picsum.photos/seed/img-ai-item-01/240/300\'"><span class="badge-ai">AI</span><span class="new-dot"></span>';
   b.querySelector('img').style.filter=snap.filter;
   b.style.visibility='hidden';
   $('scroll-area').scrollTop=0;insertTile(b);
